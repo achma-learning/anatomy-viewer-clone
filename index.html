@@ -133,10 +133,52 @@
       }
       .btn-secondary:hover { background: #ffd563; color: #000; }
 
+      /* ── Download section ── */
+      #download {
+        margin: 40px auto 0;
+        max-width: 680px;
+        background: rgba(0, 0, 80, 0.55);
+        border: 2px solid #ffd563;
+        border-radius: 10px;
+        padding: 22px 24px;
+        text-align: center;
+      }
+      #download h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        color: #fec602;
+        font-variant: small-caps;
+        letter-spacing: 0.04em;
+      }
+      #download p {
+        margin: 0 0 16px;
+        font-size: 0.85rem;
+        color: #dbdbdb;
+        line-height: 1.6;
+      }
+      .btn-download {
+        background: #226622;
+        color: #fff;
+        border: none;
+      }
+      .btn-download:hover { background: #2e8b2e; color: #fff; }
+
+      /* ── Related links ── */
+      #related {
+        margin: 32px auto 0;
+        max-width: 680px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #dbdbdb;
+        line-height: 2;
+      }
+      #related a { color: #a8d4ff; }
+      #related strong { color: #fec602; }
+
       /* ── Footer ── */
       #footer {
         text-align: center;
-        margin-top: 48px;
+        margin-top: 32px;
         font-size: 0.78rem;
         color: #aaa;
         line-height: 1.7;
@@ -217,10 +259,29 @@
 
       </section>
 
+      <div id="download">
+        <h2>Download for Offline Use</h2>
+        <p>
+          All viewers and image data are self-contained static files —
+          no internet connection required once downloaded.
+          Clone or download the repository as a ZIP, unzip, and open
+          <code>index.html</code> in any modern browser.
+        </p>
+        <a class="btn btn-download" href="https://github.com/achma-learning/anatomy-viewer-clone/archive/refs/heads/main.zip" download>
+          &#8595; Download ZIP (~70&nbsp;MB)
+        </a>
+      </div>
+
+      <div id="related">
+        <strong>Related resources</strong><br>
+        <a href="https://www.caskanatomy.info/browser/" target="_blank" rel="noopener">Original project — caskanatomy.info</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://www.imaios.com/en/e-anatomy/whole-body/visible-human-project" target="_blank" rel="noopener">Alternative viewer — IMAIOS e-Anatomy</a>
+      </div>
+
       <footer id="footer">
         &copy; 2013&ndash;2017 D.&nbsp;Jansma &amp; M.C.&nbsp;de&nbsp;Ruiter, Dept. of Anatomy &amp; Embryology, LUMC, Leiden, the&nbsp;Netherlands.
-        Free to use for educational purposes.<br>
-        Source: <a href="https://www.caskanatomy.info/browser/" target="_blank" rel="noopener">caskanatomy.info</a>
+        Free to use for educational purposes.
       </footer>
 
     </div>
