@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Visible Human Browsers Dept. Anatomy LUMC</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="imagetoolbar" content="no" />
+    <meta
+      name="author"
+      content="D.Jansma, M.Sc. Leiden University Medical Center, dept. of Anatomy and Embryology"
+    />
+    <meta
+      name="author"
+      content="O.P.Gobe,M.D. Leiden University Medical Center, dept. of Anatomy and Embryology"
+    />
+
+    <meta
+      name="Keywords"
+      content="anatomy, gross anatomy, e-learning, medical education"
+    />
+
+    <link rel="shortcut icon" href="av/faviconcask.ico" />
+
+    <style>
+      html,
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      body {
+        font-family: verdana;
+        font-size: 14px;
+        color: white;
+        background: url(av/bluegradient.png) repeat-x;
+        background-color: #000099;
+      }
+      a {
+        color: lightyellow;
+      }
+      a:hover {
+        color: maroon;
+      }
+      .serif {
+        font-family: serif;
+      }
+      .sansSerif {
+        font-family: sans-serif;
+      }
+
+      #main {
+        position: relative;
+        width: 1000px;
+        margin: 3% auto;
+      }
+
+      #head {
+        position: relative;
+        width: 100%;
+        height: 60px;
+        text-align: center;
+        font-size: 250%;
+        font-weight: bold;
+      }
+      .shadow {
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 100%;
+        margin: auto;
+        color: #404040;
+      }
+      .normal {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        margin: auto;
+        color: #fec602;
+      }
+
+      #lead {
+        position: relative;
+        width: 100%;
+        text-align: center;
+        font-size: 150%;
+      }
+      #leadSub1 {
+        font-style: oblique;
+        font-size: 120%;
+      }
+      #leadSub2 {
+        position: relative;
+        width: 600px;
+        margin: auto;
+        padding: 20px;
+        color: #dbdbdb;
+      }
+      .logo {
+        position: absolute;
+        left: 30px;
+        top: 0px;
+        padding: 0px;
+        margin: 0px;
+      }
+      #ie6Logo /*hide the gif logo which is only used in ie6 */ {
+        display: none;
+      }
+      #lumcLogo {
+        position: absolute;
+        right: 30px;
+        top: 0px;
+        padding: 0px;
+        margin: 0px;
+      }
+
+      #scheme {
+        position: relative;
+        width: 950px;
+        height: 950px;
+        margin: 30px auto;
+      }
+
+      .entry {
+        font-weight: bold;
+        font-size: 20px;
+        color: #d30379;
+      }
+      .square {
+        position: absolute;
+        width: 450px;
+        height: 450px;
+        border: groove #ffd563 4px;
+        background-image: url(av/bluegradient.png);
+      } /*#393939*/
+      .left {
+        left: 10px;
+      }
+      .top {
+        top: 10px;
+      }
+      .right {
+        left: 485px;
+      }
+      .bottom {
+        top: 485px;
+      }
+      .innerHead {
+        margin: 10px 10px 15px 10px;
+        font-size: 150%;
+        font-weight: bold;
+      }
+      .appTitle {
+        margin: 15px 10px -10px;
+      }
+      .appName {
+        color: #fec602;
+        font-variant: small-caps;
+        font-weight: bold;
+        font-size: 170%;
+      }
+      .chars {
+        position: relative;
+        margin: 10px;
+        color: #dbdbdb;
+        font-style: oblique;
+        font-weight: bold;
+      }
+      .subChars {
+        font-size: 75%;
+        font-style: italic;
+        font-weight: normal;
+      }
+      #availableLead {
+        position: absolute;
+        left: 10px;
+        top: 250px;
+      }
+      .available {
+        position: absolute;
+        left: 10px;
+        top: 270px;
+        width: 440px;
+        height: 180px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        font-size: 90%;
+      }
+
+      .available li {
+        line-height: 25px;
+      }
+      .lsnName {
+        width: 300px;
+      }
+      .r {
+        position: absolute;
+        right: 10px;
+      }
+      .small {
+        font-size: 14px;
+      }
+
+      .popUp {
+        background-color: white;
+        color: gray;
+        border: gray 1px solid;
+        padding: 5px;
+        font-size: 12px;
+      }
+      .trgGrp {
+        font-size: 75%;
+        margin: 5px 0px;
+      }
+      .tech {
+        font-size: 75%;
+        margin: 5px 0px;
+      }
+      .portal {
+        font-size: 75%;
+      }
+      .popUp a {
+        color: blue;
+      }
+    </style>
+    <!-- CONDITIONAL COMMENTS - DO NOT REMOVE : display the gif logo instead of the png logo in ie6 or lower -->
+    <!--[if lte IE 6]>
+      <style>
+        #ie6Logo {
+          display: block;
+        }
+        #stdLogo {
+          display: none;
+        }
+      </style>
+    <![endif]-->
+    <!--[if IE]>
+      <style>
+        .r {
+          position: absolute;
+          right: 20px;
+        }
+      </style>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div id="main">
+      <img id="stdLogo" class="logo" src="av/cask_logo_halo_blue.png" />
+      <img id="ie6Logo" class="logo" src="av/cask_logo_puur5.gif" />
+
+      <div id="head">
+        <div class="shadow">Visible Human Browsers</div>
+        <div class="normal">Visible Human Browsers</div>
+      </div>
+
+      <img id="lumcLogo" src="av/lumc_logo_120x120.png" />
+
+      <div id="lead" class="serif">
+        <span id="leadSub1">Dept. Anatomy LUMC</span><br />
+        <div id="leadSub2" class="small sansSerif">
+          Visible Human Browsers developed by the Dept. of Anatomy &amp;
+          Embryology,<br />Leiden University Medical Center, the Netherlands<br />D.
+          Jansma, M.C. DeRuiter<br />
+          based on datasets of the
+          <a href="https://www.nlm.nih.gov/research/visible/visible_human.html"
+            >Visible Human Project</a
+          >
+          and the LUMC
+        </div>
+      </div>
+
+      <div id="scheme">
+        <ol>
+          <li>
+            <a
+              class="entry"
+              href="https://www.caskanatomy.info/browser/html5/fembrowser.html"
+              >Complete trunk, three planes browser female</a
+            ><br />
+            <ul>
+              <li>Female, complete trunk</li>
+              <li>
+                3 planes simultaneously visible. Scrolling one plane adapts the
+                other.
+              </li>
+              <li>Only gross cryosections<br /></li>
+              <li>No plugin required</li>
+              <li>
+                Supported by recent versions of: Microsoft Internet Explorer,
+                Mozilla Firefox,Google Chrome,Apple Safari
+              </li>
+              <li><em>Download / size: 15 MB</em></li>
+              <li>
+                836 x 1064 pixels (height x width ; full viewport without
+                scrollbars)
+              </li>
+            </ul>
+          </li>
+          <br /><br />
+          <li>
+            <a
+              class="entry"
+              href="https://www.caskanatomy.info/browser/ctviewer/fembrowserct.html"
+              >Complete trunk, three planes CT browser female</a
+            ><br />
+            <ul>
+              <li>
+                Female, complete trunk : 2 versions, see info and links below.
+              </li>
+              <li>
+                3 planes simultaneously visible. Scrolling one plane adapts the
+                other.
+              </li>
+              <li>Only CT sections<br /></li>
+              <li>No plugin required</li>
+              <li>
+                Supported by recent versions of: Microsoft Internet Explorer,
+                Mozilla Firefox,Google Chrome,Apple Safari
+              </li>
+              <li>
+                <em
+                  ><a
+                    href="https://www.caskanatomy.info/browser/ctviewer/fembrowserct.html"
+                    >Download / size: 25 MB</a
+                  ></em
+                ><a
+                  href="https://www.caskanatomy.info/browser/ctviewer/fembrowserct.html"
+                >
+                  (default above link :</a
+                >
+                transversal stack 1mm slices ; coronal + sagittal stack 0.7 mm
+                slices)
+              </li>
+              <li>
+                <em
+                  ><a
+                    href="https://www.caskanatomy.info/browser/ctviewer/fembrowserctsmall.html"
+                    >Download / size: 15 MB</a
+                  ></em
+                ><a
+                  href="https://www.caskanatomy.info/browser/ctviewer/fembrowserctsmall.html"
+                >
+                  (transversal stack</a
+                >
+                1mm slices ; coronal + sagittal stack 1.4 mm slices)
+              </li>
+              <li>
+                855 x 1274 pixels (height x width ; full viewport without
+                scrollbars)
+              </li>
+            </ul>
+          </li>
+          <br /><br />
+          <li>
+            <a
+              class="entry"
+              href="https://www.caskanatomy.info/browser/headneckbrowser/fembrowser.html"
+              >Head & Neck browser</a
+            ><br />
+            <ul>
+              <li>Female, head and neck</li>
+              <li>
+                3 planes simultaneously visible. Scrolling one plane adapts the
+                other.
+              </li>
+              <li>Only gross cryosections<br /></li>
+              <li>No plugin required</li>
+              <li>
+                Supported by recent versions of: Microsoft Internet Explorer,
+                Mozilla Firefox,Google Chrome,Apple Safari
+              </li>
+              <li><em>Download / size: 27 MB</em></li>
+              <li>
+                680 x 1355 pixels (height x width ; full viewport without
+                scrollbars)
+              </li>
+            </ul>
+          </li>
+          <br /><br />
+        </ol>
+      </div>
+      <!-- end div scheme-->
+    </div>
+    <!-- end div main-->
+  </body>
+</html>

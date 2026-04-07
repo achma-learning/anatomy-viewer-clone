@@ -1,0 +1,136 @@
+<!DOCTYPE html><html>
+<!-- Mirrored from www.caskanatomy.info/browser/headneckbrowser/fembrowser.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 11 Jan 2025 21:37:18 GMT -->
+<head><title>Female Visible Human Browser: &copy; 2012 - 2017 D. Jansma &amp; M.C. de Ruiter,dept. of Anatomy LUMC, Leiden.</title>
+<script src="../av/jquerymin.js"></script><script src="../av/jqueryui.js"></script><script src="../av/jquerytouch.js"></script><style type="text/css">
+#overlay{z-index:5;bottom:0;right:0;background:#000;opacity:0.8;filter:alpha(opacity=80);color:#FFF}#overlay,#background,#transthumb,#sagthumb,#frontthumb,#tcontainer,#scontainer,#fcontainer,#kr1,#kr1up,#kr1down,#kr1l,#kr1r,#kr2,#kr2up,#kr2down,#kr2l,#kr2r,#kr3,#kr3up,#kr3down,#kr3l,#kr3r,#tbup,#tbdown,#sbup,#sbdown,#fbup,#fbdown,#tblock,#sblock,#fblock,#copywr,#tlab,#slab,#flab{position:absolute}#overlay,#background{left:0;top:0}#overlay,#tlab,#slab,#flab{font-size:14px}#overlay,#tblock,#sblock,#fblock,#tlab,#slab,#flab{font-weight:bold}body{font-family:Arial,Helvetica,sans-serif}#background{height: 680px;width: 1355px;border: 0;margin: 0;padding: 0;background:url(../av/lightbluegradhead.png) #a7cfdf repeat-x;}#transthumb,#tcontainer,#copywr,#tlab{left:3px}#transthumb,#sagthumb,#frontthumb,#tcontainer,#scontainer,#fcontainer{top:3px}#transthumb,#tcontainer{height: 420px}#transthumb,#frontthumb,#tcontainer,#fcontainer{width: 460px}#transthumb,#sagthumb,#frontthumb{z-index:1}#sagthumb,#scontainer{left: 466px;width: 420px
+}#sagthumb,#frontthumb,#scontainer,#fcontainer{height: 560px}#frontthumb,#fcontainer,#flab{left: 889px}#tcontainer,#scontainer,#fcontainer{overflow:hidden;z-index:2}#tdraggable,#sdraggable,#fdraggable{width:1px;height:1px;background:00ff00}#thandle,#shandle,#fhandle{height:1800px;width:1000px;position:relative;top:-900px;left:-500px}#kr1,#kr2,#kr3{
+	height: 77px;width: 78px;top: 539px;background: url(kruis.png) no-repeat}#kr1,#tblock{left:9px}#kr1up,#kr2up,#kr3up{top:5px}#kr1up,#kr1down,#kr2up,#kr2down,#kr3up,#kr3down{left:29px}#kr1up,#kr2up,#kr3up,#tbup,#sbup,#fbup{background:url(up.gif) no-repeat}#kr1up,#kr1down,#kr2up,#kr2down,#kr3up,#kr3down,#tbup,#tbdown,#sbup,#sbdown,#fbup,#fbdown{width:22px;height:11px}#kr1down,#kr2down,#kr3down{top:61px}#kr1down,#kr2down,#kr3down,#tbdown,#sbdown,#fbdown{background:url(down.gif) no-repeat}#kr1l,#kr1r,#kr2l,#kr2r,#kr3l,#kr3r{top:27px;width:11px;height:22px}#kr1l,#kr2l,#kr3l{left:7px;background:url(left.gif) no-repeat}#kr1r,#kr2r,#kr3r{left:61px;background:url(right.gif) no-repeat}#kr2,#sblock{left:135px}#kr3,#fblock{left:261px}#tbup,#sbup,#fbup{
+	top: 460px}#tbup,#tbdown{left:38px}#tbdown,#sbdown,#fbdown{top: 516px}#sbup,#sbdown{left:164px}#fbup,#fbdown{left:290px}#tblock,#sblock,#fblock{height: 26px;width: 81px;top: 479px;
+	background: url(boxje.gif) no-repeat;text-align: center;line-height: 2em;color: #f00}#copywr{top: 664px;font-size: 10px;color: #333}#tlab{top: 428px}#tlab,#slab,#flab{color:#666}#slab,#flab{top: 569px}#slab{left: 466px}</style><!--[if gte IE 9]><style type="text/css">.gradient {filter: none;}</style><![endif]--><script>
+$(function(){
+	var tar = {}, sar = {}, far = {}, timeout, count = 0;
+	loadImages(function(){
+              	$("#transthumb").attr("src", "t198.jpg");
+				$("#sagthumb").attr("src", "s224.jpg");
+				$("#frontthumb").attr("src", "ff149.jpg");
+				$("div#tblock").text(198);
+				$("div#sblock").text(224);
+				$("div#fblock").text(149);
+				$("#tdraggable").css({left: 224, top: 149});
+				$("#sdraggable").css({left: 149, top: 198});
+				$("#fdraggable").css({left: 224, top: 198});
+				});
+	 	 	   
+     function loadImages(callback){
+                var ti = 0, tim = 0, si = 0, sim = 0, fi = 0, fim = 0, t = 561, tt = 0, s = 461, st = 600, f = 421, ft = 270;
+				while (--t) {tar[ti]= new Image();tar[ti].src="t"+tim+".jpg";tar[ti].tk=tt;tt+=2;ti+=2;tim++} 
+				while (--s) {sar[si]= new Image();sar[si].src="s"+sim+".jpg";sar[si].tk=st;st+=2;si+=2;sim++}
+				while (--f) {far[fi]= new Image();far[fi].src="ff"+fim+".jpg";far[fi].tk=ft;ft+=2;fi+=2;fim++} 
+				callback();
+				};
+$("#tdraggable").draggable({handle:"#thandle", containment: "#tcontainer",
+	drag: function(event, ui) {
+     	var x = parseInt($(this).position().left), curx = sar[x]||sar[x-1],y = parseInt($(this).position().top),cury = far[y]||far[y-1];
+		$("#fdraggable").css({left: x});$("#sdraggable").css({left: y});$("#sagthumb").attr("src", "s"+x+".jpg");$("div#sblock").text(x);$("#frontthumb").attr("src", "ff"+y+".jpg");$("div#fblock").text(y);}
+});
+$("#sdraggable").draggable({handle:"#shandle", containment: "#scontainer",
+    drag: function(event, ui) {
+        var x = parseInt($(this).position().left), curx = far[x]||far[x-1],y = parseInt($(this).position().top), cury=tar[y]||tar[y-1];
+		$("#tdraggable").css({top: x});	$("#fdraggable").css({top: y});	$("#frontthumb").attr("src", "ff"+x+".jpg");$("div#fblock").text(x);$("#transthumb").attr("src", "t"+y+".jpg");$("div#tblock").text(y);}
+});
+$("#fdraggable").draggable({handle:"#fhandle", containment: "#fcontainer",
+     drag: function(event, ui) {
+       var x = parseInt($(this).position().left), curx = sar[x]||sar[x-1], y = parseInt($(this).position().top), cury=tar[y]||tar[y-1];
+		$("#sdraggable").css({top: y});	$("#tdraggable").css({left: x});$("#sagthumb").attr("src", "s"+x+".jpg");$("div#sblock").text(x);$("#transthumb").attr("src","t"+y+".jpg");$("div#tblock").text(y);}
+});
+$('.boxlink').css( 'cursor', 'pointer' ).click(function(){var curid = $(this).attr('id');var url = curid +"/"+ $(this).text()+".jpg";window.open(url);}); 
+$('.ico').css( 'cursor', 'move' );
+$('.arrow').on( "mouseup mouseout", function () {clearInterval(timeout);return false;}); 
+$('.arrow').css( 'cursor', 'pointer' ).mousedown(function(e) {
+tellertje();      
+function tellertje(){
+pressedButton = e.target.id;
+    switch(pressedButton) 
+    {   case "kr1l": 
+		case "kr1r":
+		case "sbup":
+		case "sbdown":
+        var curx = parseInt($("#tdraggable").position().left);
+		if ((pressedButton == "kr1r" || pressedButton == "sbup") && curx <= 460){$("#tdraggable").css("left", "+=1");$("#fdraggable").css("left", "+=1");}	
+		else{if(curx > 0){$("#tdraggable").css("left", "-=1");$("#fdraggable").css("left", "-=1");}}
+		var cps = sar[curx];$("#sagthumb").attr("src", "s"+curx+".jpg");$("div#sblock").text(curx);
+		break; 
+        case "kr1up": 
+        case "kr1down":
+		var cury = parseInt($("#tdraggable").position().top);
+		if (pressedButton == "kr1down" && cury <= 420){$("#tdraggable").css("top", "+=1");$("#sdraggable").css("left", "+=1");}	
+		else{if(cury > 0){$("#tdraggable").css("top", "-=1");$("#sdraggable").css("left", "-=1");}}
+		var	cpf=far[cury];$("#frontthumb").attr("src", "ff"+cury+".jpg");$("div#fblock").text(cury);
+		break;
+		case "kr2l": 
+		case "kr2r":
+		case "fbup":
+		case "fbdown":
+        var curx = parseInt($("#sdraggable").position().left);
+		if ((pressedButton == "kr2r" || pressedButton == "fbup") && curx <= 420){$("#sdraggable").css("left", "+=1");$("#tdraggable").css("top", "+=1");}
+		else{if(curx > 0){$("#sdraggable").css("left", "-=1");$("#tdraggable").css("top", "-=1");}}
+		var cpf = far[curx];$("#frontthumb").attr("src", "ff"+curx+".jpg");$("div#fblock").text(curx);
+		break;		
+		case "kr2up": 
+        case "kr2down":
+		var cury = parseInt($("#sdraggable").position().top);
+		if (pressedButton == "kr2down" && cury <= 560){$("#sdraggable").css("top", "+=1");$("#fdraggable").css("top", "+=1");}
+		else{if(cury > 0){$("#sdraggable").css("top", "-=1");$("#fdraggable").css("top", "-=1");}}
+		var	cpt=tar[cury];if (cpt){$("#transthumb").attr("src", "t"+cury+".jpg");$("div#tblock").text(cury);}
+		break;
+		case "kr3l": 
+		case "kr3r":
+		var curx = parseInt($("#fdraggable").position().left);
+		if (pressedButton == "kr3r" && curx <= 460){$("#fdraggable").css("left", "+=1");$("#tdraggable").css("left", "+=1");}
+		else{if(curx > 0){$("#fdraggable").css("left", "-=1");$("#tdraggable").css("left", "-=1");}}
+		var cps = sar[curx];if (cps){$("#sagthumb").attr("src", "s"+curx+".jpg");$("div#sblock").text(curx);}
+		break; 
+		case "kr3up": 
+        case "kr3down":
+		case "tbup":
+		case "tbdown":
+		var cury = parseInt($("#fdraggable").position().top);
+		if ((pressedButton == "kr3down" || pressedButton == "tbup") && cury <= 560){$("#sdraggable").css("top", "+=1");$("#fdraggable").css("top", "+=1");}
+		else{if(cury > 0){$("#sdraggable").css("top", "-=1");$("#fdraggable").css("top", "-=1");}}
+		var	cpt=tar[cury];if (cpt){$("#transthumb").attr("src", "t"+cury+".jpg");$("div#tblock").text(cury);}
+		break;	
+}}
+	  
+timeout = setInterval(function () {
+    tellertje();
+    }, 50);
+  	return false;
+});
+
+$(window).on('load', function () {
+      $('#overlay').remove(); 
+ });
+
+});
+</script>
+</head>
+<body>
+<div id="overlay"><img src="loading.gif" hspace="5" vspace="5">LOADING...</div><div id="background" class="gradient">
+<img id="transthumb" src="#"/><img id="sagthumb" src="#"/><img id="frontthumb" src="#"/>
+<div id="tcontainer" class="ico"><div id="tdraggable"><div id="thandle"><img src="crosshair.gif"></div></div></div>
+<div id="scontainer" class="ico"><div id="sdraggable"><div id="shandle"><img src="crosshair.gif"></div></div></div>
+<div id="fcontainer" class="ico"><div id="fdraggable"><div id="fhandle"><img src="crosshair.gif"></div></div></div>
+<div id="tbup" class="arrow"></div><div id="tbdown" class="arrow"></div><div id="sbup" class="arrow"></div><div id="sbdown" class="arrow"></div><div id="fbup" class="arrow"></div><div id="fbdown" class="arrow"></div>
+<div id="tblock" class="boxlink">362</div><div id="sblock" class="boxlink">1040</div><div id="fblock" class="boxlink">650</div>
+<div id="kr1"><div id="kr1up" class="arrow"></div><div id="kr1down" class="arrow"></div><div id="kr1l" class="arrow"></div><div id="kr1r" class="arrow"></div></div>
+<div id="kr2"><div id="kr2up" class="arrow"></div><div id="kr2down" class="arrow"></div><div id="kr2l" class="arrow"></div><div id="kr2r" class="arrow"></div></div>
+<div id="kr3"><div id="kr3up" class="arrow"></div><div id="kr3down" class="arrow"></div><div id="kr3l" class="arrow"></div><div id="kr3r" class="arrow"></div></div>
+<div id="copywr">&copy;  2013 - 2017  D. Jansma & M.C. de Ruiter, dept. of Anatomy LUMC, Leiden</div><div id="tlab">Transversal</div><div id="slab">Sagittal</div><div id="flab">Coronal</div></div><script>
+window.onload = function() {
+var element = document.getElementById("overlay");
+element.outerHTML = "";
+delete element;
+};
+</script></body>
+<!-- Mirrored from www.caskanatomy.info/browser/headneckbrowser/fembrowser.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 11 Jan 2025 21:37:20 GMT -->
+</html>
