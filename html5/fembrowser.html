@@ -110,27 +110,208 @@ $(window).on('load', function () {
 
 </script>
 <style>
-body{overflow:hidden;background:#000033;}
-#background{transform-origin:top left;}
+body{overflow:hidden;background:#000033;margin:0}
+#background{transform-origin:top left}
 </style>
 <script>
-(function(){
-  var nW=1064, nH=836, fH=34;
+/* ═══════════════════════════════════════════════════════════════════
+   Viewer enhancements — html5 trunk cryosections
+   1 Scale-to-fit  2 Progress bar  3 Keyboard  4 Wheel  5 Fullscreen
+   6 Pinch-to-zoom  7 Help panel
+   NW=1064  NH=836  TOTAL=744
+   ═══════════════════════════════════════════════════════════════════ */
+(function($){
+  var NW=1064,NH=836,FH=34,TOTAL=744;
+
+  /* 1 ── SCALE TO FIT ─────────────────────────────────────────── */
+  var pZ=1,pB=null;
   function fit(){
-    var bg=document.getElementById('background');
-    if(!bg)return;
-    var s=Math.min(window.innerWidth/nW,(window.innerHeight-fH)/nH);
-    var ox=Math.max(0,(window.innerWidth-nW*s)/2);
-    bg.style.transform='translate('+ox+'px,0) scale('+s+')';
+    var bg=document.getElementById('background');if(!bg)return;
+    var s=Math.min(window.innerWidth/NW,(window.innerHeight-FH)/NH)*pZ;
+    var ox=(window.innerWidth-NW*s)/2,oy=Math.max(0,(window.innerHeight-FH-NH*s)/2);
+    bg.style.transform='translate('+ox+'px,'+oy+'px) scale('+s+')';
   }
   window.addEventListener('resize',fit);
   document.addEventListener('DOMContentLoaded',fit);
   window.addEventListener('load',fit);
-})();
+
+  /* 2 ── PINCH-TO-ZOOM (two-finger touch) ─────────────────────── */
+  document.addEventListener('touchstart',function(e){
+    if(e.touches.length===2)
+      pB={d:Math.hypot(e.touches[1].clientX-e.touches[0].clientX,
+                       e.touches[1].clientY-e.touches[0].clientY),z:pZ};
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(e.touches.length===2&&pB){
+      e.preventDefault();
+      var d=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,
+                       e.touches[1].clientY-e.touches[0].clientY);
+      pZ=Math.max(0.5,Math.min(4,pB.z*d/pB.d));fit();
+      $('#v-zr').toggle(Math.abs(pZ-1)>0.05);
+    }
+  },{passive:false});
+  document.addEventListener('touchend',function(e){if(e.touches.length<2)pB=null;},{passive:true});
+  /* double-tap resets zoom */
+  var _lt=0;
+  document.addEventListener('touchend',function(e){
+    var n=Date.now();
+    if(n-_lt<300&&e.touches.length===0){pZ=1;fit();$('#v-zr').hide();}
+    _lt=n;
+  },{passive:true});
+
+  /* 3 ── PROGRESS BAR ──────────────────────────────────────────── */
+  $(function(){
+    $('#overlay').css({display:'flex',alignItems:'center',justifyContent:'center',
+      position:'fixed',top:0,left:0,right:0,bottom:0,width:'100%',height:'100%',
+      background:'rgba(0,0,28,.96)',zIndex:9999})
+    .html('<div style="text-align:center;font-family:Arial,sans-serif;color:#fff">'+
+      '<div style="font-size:16px;letter-spacing:.03em">Loading anatomical slices\u2026</div>'+
+      '<div style="width:300px;height:14px;margin:18px auto 8px;border:1px solid #fec602;'+
+           'border-radius:7px;overflow:hidden;background:rgba(255,255,255,.07)">'+
+        '<div id="v-pb" style="width:0;height:100%;transition:width .25s;'+
+             'background:linear-gradient(90deg,#fec602,#d30379)"></div>'+
+      '</div>'+
+      '<div id="v-pt" style="color:#fec602;font-weight:bold;font-size:13px">0%</div>'+
+    '</div>');
+    var ld=0;
+    function bar(){
+      var p=Math.min(100,Math.round(ld/TOTAL*100));
+      var pb=document.getElementById('v-pb'),pt=document.getElementById('v-pt');
+      if(pb)pb.style.width=p+'%';
+      if(pt)pt.textContent=p+'%\u2002('+ld+'\u2009/\u2009'+TOTAL+')';
+    }
+    function isImg(u){return /\/(t|s|ff?)\d+\.jpg/.test(u);}
+    if(performance&&performance.getEntriesByType){
+      performance.getEntriesByType('resource').forEach(function(e){if(isImg(e.name))ld++;});bar();
+    }
+    if(window.PerformanceObserver){
+      try{new PerformanceObserver(function(l){
+        l.getEntries().forEach(function(e){if(isImg(e.name)){ld++;bar();}});
+      }).observe({entryTypes:['resource']});}catch(x){}
+    }
+  });
+
+  /* 4 ── BUTTON TRIGGER (reuses existing arrow handlers + bounds) ─ */
+  function pressBtn(id){
+    var $b=$('#'+id);
+    $b.trigger('mousedown');
+    setTimeout(function(){$b.trigger('mouseup');},0);
+  }
+
+  /* 5 ── KEYBOARD SHORTCUTS ────────────────────────────────────── */
+  /* ↑↓ = transversal   ←→ = sagittal   PgUp/Dn = frontal
+     Shift multiplies step count ×10
+     F = fullscreen   H = help   Esc = close help             */
+  $(function(){
+    $(document).on('keydown.v',function(e){
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+      var m={38:'tbup',40:'tbdown',37:'kr1l',39:'kr1r',33:'fbup',34:'fbdown'};
+      if(m[e.which]){
+        e.preventDefault();
+        var r=e.shiftKey?10:1;
+        for(var i=0;i<r;i++)pressBtn(m[e.which]);
+        return;
+      }
+      if(e.which===70&&!e.ctrlKey&&!e.metaKey){tFS();e.preventDefault();}
+      if(e.which===72&&!e.ctrlKey&&!e.metaKey){tHelp();e.preventDefault();}
+      if(e.which===27)$('#v-help').hide();
+    });
+  });
+
+  /* 6 ── MOUSE-WHEEL SLICE NAVIGATION ─────────────────────────── */
+  /* Wheel on transversal panel → tbup/tbdown
+     Wheel on sagittal panel    → sbup/sbdown
+     Wheel on frontal panel     → fbup/fbdown               */
+  $(function(){
+    function wh(elId,up,dn){
+      var node=document.getElementById(elId);if(!node)return;
+      node.addEventListener('wheel',function(e){
+        e.preventDefault();pressBtn(e.deltaY>0?dn:up);
+      },{passive:false});
+    }
+    wh('tcontainer','tbup','tbdown');
+    wh('scontainer','sbup','sbdown');
+    wh('fcontainer','fbup','fbdown');
+  });
+
+  /* 7 ── FULLSCREEN ────────────────────────────────────────────── */
+  function tFS(){
+    var el=document.documentElement;
+    var fe=document.fullscreenElement||document.webkitFullscreenElement;
+    if(!fe)(el.requestFullscreen||el.webkitRequestFullscreen||
+            el.mozRequestFullScreen||el.msRequestFullscreen).call(el);
+    else   (document.exitFullscreen||document.webkitExitFullscreen||
+            document.mozCancelFullScreen||document.msExitFullscreen).call(document);
+  }
+
+  /* 8 ── TOOLBAR + HELP PANEL ──────────────────────────────────── */
+  function tHelp(){$('#v-help').toggle();}
+  $(function(){
+    $('<style>'+
+      '.v-btn{display:inline-flex;align-items:center;background:rgba(0,0,50,.85);color:#fff;'+
+             'border:1px solid #fec602;padding:6px 13px;border-radius:5px;cursor:pointer;'+
+             'font-size:13px;font-weight:bold;text-decoration:none;user-select:none;'+
+             'line-height:1;font-family:Arial,sans-serif}'+
+      '.v-btn:hover{background:#d30379;border-color:#d30379;color:#fff}'+
+    '</style>').appendTo('head');
+
+    /* toolbar — top-left */
+    $('body').prepend(
+      '<div id="v-tb" style="position:fixed;top:8px;left:8px;z-index:9990;display:flex;gap:8px">'+
+        '<a href="../index.html" class="v-btn">&#8592; Home</a>'+
+        '<button id="v-fs" class="v-btn" title="Toggle fullscreen (F)">&#x26F6;</button>'+
+        '<button id="v-hb" class="v-btn" title="Keyboard shortcuts (H)">? Shortcuts</button>'+
+      '</div>'
+    );
+
+    /* zoom-reset pill — bottom-right, only visible when pinch-zoomed */
+    $('body').append(
+      '<button id="v-zr" style="display:none;position:fixed;bottom:50px;right:10px;'+
+              'z-index:9990;" class="v-btn">&#8634; Reset zoom</button>'
+    );
+
+    /* help overlay */
+    $('body').append(
+      '<div id="v-help" style="display:none;position:fixed;top:50%;left:50%;'+
+           'transform:translate(-50%,-50%);background:rgba(0,0,35,.97);'+
+           'border:1px solid #fec602;border-radius:10px;padding:24px 30px;'+
+           'z-index:10000;font-family:Arial,sans-serif;color:#fff;min-width:280px">'+
+        '<div style="color:#fec602;font-size:15px;font-weight:bold;margin-bottom:14px">Controls</div>'+
+        '<table style="border-collapse:collapse;font-size:13px;width:100%">'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602;white-space:nowrap">&#8593; / &#8595;</td>'+
+              '<td>Transversal slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602;white-space:nowrap">&#8592; / &#8594;</td>'+
+              '<td>Sagittal slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602;white-space:nowrap">PgUp / PgDn</td>'+
+              '<td>Frontal slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Shift + key</td>'+
+              '<td>Step \xd710 slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Scroll wheel</td>'+
+              '<td>Navigate that panel\u2019s slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Pinch (touch)</td>'+
+              '<td>Zoom in / out</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Double-tap</td>'+
+              '<td>Reset zoom</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">F</td>'+
+              '<td>Toggle fullscreen</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">H / Esc</td>'+
+              '<td>Toggle this panel</td></tr>'+
+        '</table>'+
+        '<div style="text-align:right;margin-top:18px">'+
+          '<button id="v-hc" class="v-btn">Close</button>'+
+        '</div>'+
+      '</div>'
+    );
+
+    $('#v-fs').on('click',tFS);
+    $('#v-hb').on('click',tHelp);
+    $('#v-hc').on('click',function(){$('#v-help').hide();});
+    $('#v-zr').on('click',function(){pZ=1;fit();$(this).hide();});
+  });
+}(jQuery));
 </script>
 </head>
 <body>
-<a href="../index.html" style="position:fixed;top:8px;right:8px;z-index:999;background:#d30379;color:#fff;padding:6px 12px;border-radius:5px;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;opacity:0.85;">&larr; Home</a>
 <div id="overlay"><img src="loading.gif" hspace="5" vspace="5">LOADING...</div><div id="background" class="gradient">
 <img id="transthumb" src="#"/><img id="sagthumb" src="#"/><img id="frontthumb" src="#"/>
 <div id="tcontainer" class="ico"><div id="tdraggable"><div id="thandle"><img src="crosshair.gif"></div></div></div>
