@@ -103,6 +103,7 @@ anatomy-viewer-clone/
 
 Original browsers developed by **D. Jansma & M.C. de Ruiter**, Dept. of Anatomy & Embryology, Leiden University Medical Center, the Netherlands.
 © 2013 – 2017. Free to use for educational purposes.
++ [Original project — caskanatomy.info](https://www.caskanatomy.info/browser/)
 
 Dataset: [NLM Visible Human Project](https://www.nlm.nih.gov/research/visible/visible_human.html)
 
