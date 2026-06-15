@@ -98,7 +98,7 @@ $("#fdraggable").draggable({handle:"#fhandle", containment: "#fcontainer",
        var x = parseInt($(this).lpos().left), curx = sar[x]||sar[x-1], y = parseInt($(this).lpos().top), cury=tar[y]||tar[y-1];
 		$("#sdraggable").css({top: y});	$("#tdraggable").css({left: x});$("#sagthumb").attr("src", curx.src);$("div#sblock").text(curx.tk);	$("#transthumb").attr("src", cury.src);$("div#tblock").text(cury.tk);}
 });
-$('.boxlink').css( 'cursor', 'pointer' ).click(function(){var curid = $(this).attr('id');var url = curid +"/"+ $(this).text()+".jpg";window.open(url);}); 
+$('.boxlink').css( 'cursor', 'pointer' ).click(function(){var m={tblock:'#transthumb',sblock:'#sagthumb',fblock:'#frontthumb'};var s=$(m[$(this).attr('id')]).attr('src');if(s){window.open(s);}}); 
 $('.ico').css( 'cursor', 'move' );
 $('.arrow').on( "mouseup mouseout", function () {clearInterval(timeout);return false;}); 
 $('.arrow').css( 'cursor', 'pointer' ).mousedown(function(e) {
@@ -255,7 +255,7 @@ body{overflow:hidden;background:#000033;margin:0}
   function pressBtn(id){
     var $b=$('#'+id);
     $b.trigger('mousedown');
-    setTimeout(function(){$b.trigger('mouseup');},0);
+    $b.trigger('mouseup');
   }
 
   /* 5 ── KEYBOARD SHORTCUTS ────────────────────────────────────── */
@@ -385,8 +385,7 @@ body{overflow:hidden;background:#000033;margin:0}
 <div id="copywr">&copy;  2012 - 2017  D. Jansma & M.C. de Ruiter, dept. of Anatomy LUMC, Leiden</div><div id="tlab">Transversal</div><div id="slab">Sagittal</div><div id="flab">Coronal</div></div><script>
 window.onload = function() {
 var element = document.getElementById("overlay");
-element.outerHTML = "";
-delete element;
+if (element) { element.outerHTML = ""; }
 };
 </script>
 <footer style="position:fixed;bottom:0;left:0;width:100%;z-index:100;background:#000011;color:#999;font-family:Arial,Helvetica,sans-serif;font-size:11px;padding:6px 12px;text-align:center;line-height:1.6;">
