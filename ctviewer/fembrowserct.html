@@ -1,6 +1,66 @@
 <!DOCTYPE html><html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Female CT Browser: &copy; 2013 - 2017 D. Jansma &amp; M.C. de Ruiter,dept. of Anatomy LUMC, Leiden.</title>
-<script src="../av/jquerymin.js"></script><script src="../av/jqueryui.js"></script><script src="../av/jquerytouch.js"></script><style type="text/css">
+<script src="../av/jquerymin.js"></script><script src="../av/jqueryui.js"></script><script src="../av/jquerytouch.js"></script>
+<script>
+/* ── Crosshair scale-fix ─────────────────────────────────────────────
+   #background is fitted to the viewport with a CSS transform:scale().
+   jQuery UI draggable and jQuery's offset/position helpers ignore CSS
+   transforms, so the crosshair drifted away from the pointer (and the
+   slice indices were wrong) at any scale other than 1:1. We make the
+   draggable scale-aware and add $.fn.lpos() to read the true, local
+   (untransformed) left/top used for slice indexing.
+   ──────────────────────────────────────────────────────────────────── */
+(function ($) {
+  function vhScale() {
+    var bg = document.getElementById("background");
+    if (!bg) return 1;
+    var st = getComputedStyle(bg),
+        tf = st.transform || st.webkitTransform || st.mozTransform || st.msTransform || "none";
+    if (!tf || tf === "none") return 1;
+    var m = tf.match(/matrix3?d?\(([^)]+)\)/);
+    return m ? (parseFloat(m[1].split(",")[0]) || 1) : 1;
+  }
+  /* true local (untransformed) left/top — drop-in for jQuery's positional read */
+  $.fn.lpos = function () {
+    var el = this[0];
+    return el ? { left: parseFloat($(el).css("left")) || 0,
+                  top:  parseFloat($(el).css("top"))  || 0 }
+              : { left: 0, top: 0 };
+  };
+  if (!($.ui && $.ui.draggable)) return;
+  var proto  = $.ui.draggable.prototype,
+      _start = proto._mouseStart,
+      _gen   = proto._generatePosition;
+  /* snapshot scale + start pointer/position before the drag begins */
+  proto._mouseStart = function (event) {
+    var el = this.element, vh = {
+      s:  vhScale(),
+      px: event.pageX, py: event.pageY,
+      l:  parseFloat(el.css("left")) || 0,
+      t:  parseFloat(el.css("top"))  || 0
+    };
+    var c = this.options.containment, ce = null;
+    if (typeof c === "string") { try { ce = document.querySelector(c); } catch (e) {} }
+    if (ce) {
+      vh.maxL = ce.clientWidth  - el[0].offsetWidth;
+      vh.maxT = ce.clientHeight - el[0].offsetHeight;
+    }
+    this._vh = vh;
+    return _start.apply(this, arguments);
+  };
+  /* convert pointer travel to local units (÷ scale) and clamp to container */
+  proto._generatePosition = function (event, constrain) {
+    var vh = this._vh;
+    if (!vh || vh.s === 1) return _gen.call(this, event, constrain);
+    var left = vh.l + (event.pageX - vh.px) / vh.s,
+        top  = vh.t + (event.pageY - vh.py) / vh.s;
+    if (vh.maxL != null) left = Math.max(0, Math.min(vh.maxL, left));
+    if (vh.maxT != null) top  = Math.max(0, Math.min(vh.maxT, top));
+    return { top: top, left: left };
+  };
+})(jQuery);
+</script>
+<style type="text/css">
 #overlay{z-index:5;bottom:0;right:0;background:#000;opacity:0.8;filter:alpha(opacity=80);color:#FFF}#overlay,#background,#transthumb,#sagthumb,#frontthumb,#tcontainer,#scontainer,#fcontainer,#kr1,#kr1up,#kr1down,#kr1l,#kr1r,#kr2,#kr2up,#kr2down,#kr2l,#kr2r,#kr3,#kr3up,#kr3down,#kr3l,#kr3r,#tbup,#tbdown,#sbup,#sbdown,#fbup,#fbdown,#tblock,#sblock,#fblock,#copywr,#tlab,#slab,#flab{position:absolute}#overlay,#background{left:0;top:0}#overlay,#tlab,#slab,#flab{font-size:14px}#overlay,#tblock,#sblock,#fblock,#tlab,#slab,#flab{font-weight:bold}body{font-family:Arial,Helvetica,sans-serif}#background{height:855px;width:1274px;border:0;margin:0;padding:0;background:url(../av/lightbluegradsmallct.png) #a7cfdf repeat-x;}#transthumb,#tcontainer,#copywr,#tlab{left:3px}#transthumb,#sagthumb,#frontthumb,#tcontainer,#scontainer,#fcontainer{top:3px}#transthumb,#tcontainer{height:362px}#transthumb,#frontthumb,#tcontainer,#fcontainer{width:450px}#transthumb,#sagthumb,#frontthumb{z-index:1}#sagthumb,#scontainer{left:456px;width:362px
 }#sagthumb,#frontthumb,#scontainer,#fcontainer{height:828px}#frontthumb,#fcontainer,#flab{left:821px}#tcontainer,#scontainer,#fcontainer{overflow:hidden;z-index:2}#tdraggable,#sdraggable,#fdraggable{width:1px;height:1px;background:00ff00}#thandle,#shandle,#fhandle{height:1800px;width:1000px;position:relative;top:-900px;left:-500px}#kr1,#kr2,#kr3{	height:77px;width:78px;top:670px;background:url(kruis.png) no-repeat}#kr1,#tblock{left:9px}#kr1up,#kr2up,#kr3up{top:5px}#kr1up,#kr1down,#kr2up,#kr2down,#kr3up,#kr3down{left:29px}#kr1up,#kr2up,#kr3up,#tbup,#sbup,#fbup{background:url(up.gif) no-repeat}#kr1up,#kr1down,#kr2up,#kr2down,#kr3up,#kr3down,#tbup,#tbdown,#sbup,#sbdown,#fbup,#fbdown{width:22px;height:11px}#kr1down,#kr2down,#kr3down{top:61px}#kr1down,#kr2down,#kr3down,#tbdown,#sbdown,#fbdown{background:url(down.gif) no-repeat}#kr1l,#kr1r,#kr2l,#kr2r,#kr3l,#kr3r{top:27px;width:11px;height:22px}#kr1l,#kr2l,#kr3l{left:7px;background:url(left.gif) no-repeat}#kr1r,#kr2r,#kr3r{left:61px;background:url(right.gif) no-repeat}#kr2,#sblock{left:135px}#kr3,#fblock{left:261px}#tbup,#sbup,#fbup{
 	top:563px}#tbup,#tbdown{left:38px}#tbdown,#sbdown,#fbdown{top:621px}#sbup,#sbdown{left:164px}#fbup,#fbdown{left:290px}#tblock,#sblock,#fblock{height:26px;width:81px;top:582px;background:url(boxje.gif) no-repeat;text-align:center;line-height:2em;color:#f00}#copywr{top:839px;font-size:10px;color:#333}#tlab{top:369px}#tlab,#slab,#flab{color:#666}#slab,#flab{top:836px}#slab{left:456px}</style><!--[if gte IE 9]><style type="text/css">.gradient {filter: none;}</style><![endif]--><script>
@@ -31,18 +91,18 @@ $(function(){
 				};
 $("#tdraggable").draggable({handle:"#thandle", containment: "#tcontainer",
 	drag: function(event, ui) {
-     	var x = parseInt($(this).position().left), curx = sar[x]||sar[x-1], y = parseInt($(this).position().top), cury = far[y]||far[y-1];
+     	var x = parseInt($(this).lpos().left), curx = sar[x]||sar[x-1], y = parseInt($(this).lpos().top), cury = far[y]||far[y-1];
 		$("#fdraggable").css({left: x});$("#sdraggable").css({left: y});$("#sagthumb").attr("src", curx.src);$("div#sblock").text(x);$("#frontthumb").attr("src", cury.src);
 		$("div#fblock").text(y);}
 });
 $("#sdraggable").draggable({handle:"#shandle", containment: "#scontainer",
     drag: function(event, ui) {
-        var x = parseInt($(this).position().left), curx = far[x]||far[x-1],y = parseInt($(this).position().top),cury=tar[y]||tar[y-1];
+        var x = parseInt($(this).lpos().left), curx = far[x]||far[x-1],y = parseInt($(this).lpos().top),cury=tar[y]||tar[y-1];
 		$("#tdraggable").css({top: x});	$("#fdraggable").css({top: y});	$("#frontthumb").attr("src", curx.src);$("div#fblock").text(x);$("#transthumb").attr("src", cury.src);$("div#tblock").text(cury.tk);}
 });
 $("#fdraggable").draggable({handle:"#fhandle", containment: "#fcontainer",
      drag: function(event, ui) {
-       var x = parseInt($(this).position().left), curx = sar[x]||sar[x-1], y = parseInt($(this).position().top),cury=tar[y]||tar[y-1];
+       var x = parseInt($(this).lpos().left), curx = sar[x]||sar[x-1], y = parseInt($(this).lpos().top),cury=tar[y]||tar[y-1];
 		$("#sdraggable").css({top: y});	$("#tdraggable").css({left: x});$("#sagthumb").attr("src", curx.src);$("div#sblock").text(x);$("#transthumb").attr("src", cury.src);$("div#tblock").text(cury.tk);}
 });
 $('.boxlink').css( 'cursor', 'pointer' ).click(function(){var curid = $(this).attr('id');var url = curid +"/"+ $(this).text()+".jpg";window.open(url);}); 
@@ -57,14 +117,14 @@ pressedButton = e.target.id;
 		case "kr1r":
 		case "sbup":
 		case "sbdown":
-        var curx = parseInt($("#tdraggable").position().left);
+        var curx = parseInt($("#tdraggable").lpos().left);
 		if ((pressedButton == "kr1r" || pressedButton == "sbup") && curx <= 449){$("#tdraggable").css("left", "+=1");$("#fdraggable").css("left", "+=1");}	
 		else{if(curx > 0){$("#tdraggable").css("left", "-=1");$("#fdraggable").css("left", "-=1");}}
 		var cps = sar[curx]||sar[curx-1];$("#sagthumb").attr("src", cps.src);$("div#sblock").text(curx);
 		break; 
         case "kr1up": 
         case "kr1down":
-		var cury = parseInt($("#tdraggable").position().top);
+		var cury = parseInt($("#tdraggable").lpos().top);
 		if (pressedButton == "kr1down" && cury <= 361){$("#tdraggable").css("top", "+=1");$("#sdraggable").css("left", "+=1");}	
 		else{if(cury > 0){$("#tdraggable").css("top", "-=1");$("#sdraggable").css("left", "-=1");}}
 		var	cpf=far[cury]||far[cury-1];$("#frontthumb").attr("src", cpf.src);$("div#fblock").text(cury);
@@ -73,21 +133,21 @@ pressedButton = e.target.id;
 		case "kr2r":
 		case "fbup":
 		case "fbdown":
-        var curx = parseInt($("#sdraggable").position().left);
+        var curx = parseInt($("#sdraggable").lpos().left);
 		if ((pressedButton == "kr2r" || pressedButton == "fbup") && curx <= 361){$("#sdraggable").css("left", "+=1");$("#tdraggable").css("top", "+=1");}
 		else{if(curx > 0){$("#sdraggable").css("left", "-=1");$("#tdraggable").css("top", "-=1");}}
 		var cpf = far[curx]||far[curx-1];$("#frontthumb").attr("src", cpf.src);$("div#fblock").text(curx);
 		break;		
 		case "kr2up": 
         case "kr2down":
-		var cury = parseInt($("#sdraggable").position().top);
+		var cury = parseInt($("#sdraggable").lpos().top);
 		if (pressedButton == "kr2down" && cury <= 827){$("#sdraggable").css("top", "+=1");$("#fdraggable").css("top", "+=1");}
 		else{if(cury > 0){$("#sdraggable").css("top", "-=1");$("#fdraggable").css("top", "-=1");}}
 		var	cpt=tar[cury]||tar[cury-1];$("#transthumb").attr("src", cpt.src);$("div#tblock").text(cpt.tk);
 		break;
 		case "kr3l": 
 		case "kr3r":
-		var curx = parseInt($("#fdraggable").position().left);
+		var curx = parseInt($("#fdraggable").lpos().left);
 		if (pressedButton == "kr3r" && curx <= 449){$("#fdraggable").css("left", "+=1");$("#tdraggable").css("left", "+=1");}
 		else{if(curx > 0){$("#fdraggable").css("left", "-=1");$("#tdraggable").css("left", "-=1");}}
 		var cps = sar[curx]||sar[curx-1];$("#sagthumb").attr("src", cps.src);$("div#sblock").text(curx);
@@ -96,7 +156,7 @@ pressedButton = e.target.id;
         case "kr3down":
 		case "tbup":
 		case "tbdown":
-		var cury = parseInt($("#fdraggable").position().top);
+		var cury = parseInt($("#fdraggable").lpos().top);
 		if ((pressedButton == "kr3down" || pressedButton == "tbup") && cury <= 827){$("#sdraggable").css("top", "+=1");$("#fdraggable").css("top", "+=1");}
 		else{if(cury > 0){$("#sdraggable").css("top", "-=1");$("#fdraggable").css("top", "-=1");}}
 		var	cpt=tar[cury]||tar[cury-1];$("#transthumb").attr("src", cpt.src);$("div#tblock").text(cpt.tk);
