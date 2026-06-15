@@ -34,6 +34,8 @@ _Last synced: 2026-06-15 @ 8224d89_
 ### How one viewer works (the mental model)
 Each page preloads every slice into JS maps `tar` (transversal), `sar` (sagittal), `far` (frontal) on load. Three `<img>` panels show the current slice of each plane. A 1px jQuery-UI `draggable` (`#tdraggable/#sdraggable/#fdraggable`) sits in each panel; its pixel position is mapped to an array index to pick the slice, and dragging one panel writes the linked coordinate into the other two so all three stay in sync. Arrow buttons + a `setInterval` do the same by ±1.
 
+Each viewer has **two distinct script regions**: (a) the **legacy core** — the original mirrored `$(function(){…})` with the draggable setup, slice-index logic, and arrow buttons; and (b) the **enhancement IIFE** near the bottom (`(function($){…}(jQuery))`) added by this fork: scale-to-fit (`fit()` using `NW/NH/FH` native-size constants + a CSS transform on `#background`), loading progress bar, keyboard shortcuts, mouse-wheel + pinch zoom, fullscreen, and the Home/Help toolbar. The scale-fix patch from §6 bridges the two (the IIFE's transform is what broke the legacy draggable).
+
 ## 5. Rules For Editing This Code
 - **Zero-dependency on purpose.** No `npm`, no `package.json`, no build step. Libraries live in `av/`. Don't "modernize" by adding a bundler.
 - **ES5 in the viewer pages.** They target old browsers (IE conditional comments present). Keep `var`, no arrow functions / template literals inside the legacy inline scripts. (The enhancement IIFE at the bottom is also ES5 — keep it that way.)
