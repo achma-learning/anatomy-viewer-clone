@@ -82,7 +82,7 @@ anatomy-viewer-clone/
 
 ## Offline Use
 
-1. Click **Download ZIP** on the landing page, or clone the repository:
+1. Click **Download ZIP** on the landing page, or clone the repository using terminal:
    ```bash
    git clone https://github.com/achma-learning/anatomy-viewer-clone.git
    ```

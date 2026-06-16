@@ -1,5 +1,5 @@
 # Visible Human Browsers — AI Context File
-_Last synced: 2026-06-15 @ 8224d89_
+_Last synced: 2026-06-16_
 
 ## 1. What This Is (Plain English)
 - **In one sentence:** A website that lets you scrub through a real human body in cross-section — three views at once (top-down, side, front) that stay in sync as you drag.
@@ -19,7 +19,7 @@ _Last synced: 2026-06-15 @ 8224d89_
 - **Framework / key libraries (all vendored in `av/`):**
   - jQuery **3.1.1** (custom slim build, see header in `av/jquerymin.js`)
   - jQuery UI **1.12.1** — only `widget, data, scroll-parent, draggable, mouse` (`av/jqueryui.js:1`)
-  - jQuery UI Touch Punch **0.2.3** — maps touch → mouse so draggable works on phones (`av/jquerytouch.js`)
+  - jQuery UI Touch Punch **0.2.3** — maps touch → mouse so draggable works on phones (`av/jquerytouch.js`). It calls `.bind()/.unbind()`, which this slim jQuery build does **not** ship; each viewer re-adds those aliases in its patch script or touch is completely dead (see §6).
 - **What kind of project:** Static multi-page website (one landing page + 4 standalone viewer pages). No bundler, no framework.
 - **External services:** None at runtime. All images/libs are local. Landing page has outbound *links* to nlm.nih.gov, caskanatomy.info, imaios.com, and a GitHub ZIP-download link — links only, no API calls.
 
@@ -34,7 +34,7 @@ _Last synced: 2026-06-15 @ 8224d89_
 ### How one viewer works (the mental model)
 Each page preloads every slice into JS maps `tar` (transversal), `sar` (sagittal), `far` (frontal) on load. Three `<img>` panels show the current slice of each plane. A 1px jQuery-UI `draggable` (`#tdraggable/#sdraggable/#fdraggable`) sits in each panel; its pixel position is mapped to an array index to pick the slice, and dragging one panel writes the linked coordinate into the other two so all three stay in sync. Arrow buttons + a `setInterval` do the same by ±1.
 
-Each viewer has **two distinct script regions**: (a) the **legacy core** — the original mirrored `$(function(){…})` with the draggable setup, slice-index logic, and arrow buttons; and (b) the **enhancement IIFE** near the bottom (`(function($){…}(jQuery))`) added by this fork: scale-to-fit (`fit()` using `NW/NH/FH` native-size constants + a CSS transform on `#background`), loading progress bar, keyboard shortcuts, mouse-wheel + pinch zoom, fullscreen, and the Home/Help toolbar. The scale-fix patch from §6 bridges the two (the IIFE's transform is what broke the legacy draggable).
+Each viewer has **two distinct script regions**: (a) the **legacy core** — the original mirrored `$(function(){…})` with the draggable setup, slice-index logic, and arrow buttons; and (b) the **enhancement IIFE** near the bottom (`(function($){…}(jQuery))`) added by this fork: scale-to-fit (`fit()` using `NW/NH/FH` native-size constants + a CSS transform on `#background`), loading progress bar, keyboard shortcuts, mouse-wheel + pinch zoom, fullscreen, **touch stack-scroll** (one-finger swipe cines a panel like Radiopaedia, via a floating `⇅ Scroll` toggle that is ON by default on phones/tablets), and the Home/Help toolbar. The scale-fix patch from §6 bridges the two (the IIFE's transform is what broke the legacy draggable).
 
 ## 5. Rules For Editing This Code
 - **Zero-dependency on purpose.** No `npm`, no `package.json`, no build step. Libraries live in `av/`. Don't "modernize" by adding a bundler.
@@ -46,6 +46,8 @@ Each viewer has **two distinct script regions**: (a) the **legacy core** — the
 
 ## 6. Fragile Bits & Landmines
 - **The crosshair scale-fix (most important — just added).** Each viewer has an injected patch right after the jQuery includes: `$.fn.lpos()` + overrides of `_mouseStart`/`_generatePosition` on `$.ui.draggable.prototype`. It reads the live zoom from `#background`'s computed `transform` matrix and divides pointer travel by it. **Symptom if removed/broken:** crosshair drifts away from the cursor (moves by `delta × scale`) whenever the viewer is scaled to fit. Don't delete it; don't switch its reads back to `.position()`.
+- **The Touch Punch `.bind`/`.unbind` shim (the touch lifeline — just added).** The same patch script also re-adds `$.fn.bind`/`$.fn.unbind`, which the slim jQuery build dropped. Touch Punch self-gates on `"ontouchend" in document`, so **only on touch devices** it overrides `_mouseInit` to call `element.bind({...})`; without the shim the first `.draggable()` throws `element.bind is not a function`, the legacy `$(function(){…})` aborts mid-setup, and the **entire viewer is dead on phones/tablets** (no drag, no arrows, no wheel, no touch-scroll) while desktop looks perfectly fine. **Don't remove the shim.** Root cause is in the vendored `av/jquerytouch.js`; we shim per-viewer rather than edit the minified lib.
+- **Touch stack-scroll vs. the crosshair draggable share one finger.** Section 9 of the enhancement IIFE binds `touchstart/move/end` on each panel; while `⇅ Scroll` is ON it `preventDefault`s the swipe, sets `touch-action:none`, and **disables the draggable** (`draggable('option','disabled',true)`) so the two don't both move. Turning it OFF re-enables the draggable. If you ever rip out the toggle, re-enable the draggable or crosshair-drag stays dead on touch.
 - **Slice index math is coupled to CSS container sizes.** Panel widths/heights (e.g. html5 `#tcontainer` 372×308; ct 450×362; headneck 460×420/560) must match the preloaded array ranges. Resizing a container in CSS silently maps to the wrong slices. The new scale-fix also reads these via `clientWidth/clientHeight` for drag clamping.
 - **Cryptic image-preload constants.** Loops like `t = 405, tt = 825 … tt+=5` (`html5/fembrowser.html`) or `step=1.4892086…` (`ctviewer`) are tuned per viewer to the exact image counts/spacing. Treat as magic numbers; don't refactor without the dataset in front of you.
 - **The giant `#thandle` (1000×1800, offset top:-900 left:-500) is intentional.** It's a big invisible grab area around the 1px crosshair so it's easy to click. Looks like a mistake; isn't.
@@ -55,11 +57,12 @@ Each viewer has **two distinct script regions**: (a) the **legacy core** — the
 - **`<!-- Mirrored from … HTTrack -->` comments** mark the origin rip. Harmless; leave them.
 
 ## 7. Current State
-- **Last shipped:** Crosshair drift fix (commit `8224d89`, PR #7) — made jQuery UI draggable scale-aware so the crosshair tracks the pointer at any zoom; verified in Chromium across all 4 viewers and all 3 planes at scale <1 and >1.
-- **Working on now:** PR #7 open against `main` on branch `claude/pensive-thompson-tu4g62` (may be awaiting review/merge).
+- **Last shipped:** Touch support + Radiopaedia-style stack scrolling. Two changes per viewer: (a) the Touch Punch `.bind`/`.unbind` shim (§6) that makes the viewer work **at all** on touch devices, and (b) a one-finger swipe-to-cine handler on each panel plus a floating `⇅ Scroll` toggle (ON by default on phones/tablets; OFF restores crosshair-drag). Verified in headless Chromium with emulated touch across all 4 viewers: swipe cines all 3 planes, the toggle flips modes, pinch-zoom/double-tap are unaffected, and desktop wheel/keyboard are unchanged.
+- **Working on now:** —
 - **Next up:**
   1. Decide whether to delete the dead `headneckbrowser/headneckbrowser/` (and dedupe `headneckbrowser/av/`).
-  2. _Nothing else firmly queued._ (Candidate, not committed: Git LFS for the image payload.)
+  2. Consider hoisting the `.bind` shim into a tiny shared `av/` script so a future viewer can't forget it.
+  3. _Candidate, not committed:_ Git LFS for the image payload.
 
 ## 8. Update Protocol (Verbatim)
 > **For the AI Assistant:** When asked to "Update CONTEXT.md":
