@@ -20,6 +20,15 @@
     var m = tf.match(/matrix3?d?\(([^)]+)\)/);
     return m ? (parseFloat(m[1].split(",")[0]) || 1) : 1;
   }
+  /* The vendored jQuery is a slim build with no .bind()/.unbind(); jQuery-UI
+     Touch Punch calls element.bind()/.unbind() the instant a draggable is
+     created on a touch device, which threw "element.bind is not a function"
+     and aborted the WHOLE viewer init — so on phones/tablets nothing worked
+     (no drag, no arrows, no wheel). Restore the two deprecated aliases. */
+  if ($.fn && !$.fn.bind) {
+    $.fn.bind   = function (types, data, fn) { return this.on(types, null, data, fn); };
+    $.fn.unbind = function (types, fn)       { return this.off(types, null, fn); };
+  }
   /* true local (untransformed) left/top — drop-in for jQuery's positional read */
   $.fn.lpos = function () {
     var el = this[0];
@@ -296,6 +305,7 @@ body{overflow:hidden;background:#000033;margin:0}
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602;white-space:nowrap">PgUp / PgDn</td><td>Frontal slices</td></tr>'+
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Shift + key</td><td>Step \xd710 slices</td></tr>'+
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Scroll wheel</td><td>Navigate that panel\u2019s slices</td></tr>'+
+          '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Swipe (touch)</td><td>Scroll that panel\u2019s slices (\u21c5 Scroll ON)</td></tr>'+
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Pinch (touch)</td><td>Zoom in / out</td></tr>'+
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602">Double-tap</td><td>Reset zoom</td></tr>'+
           '<tr><td style="padding:5px 16px 5px 0;color:#fec602">F</td><td>Toggle fullscreen</td></tr>'+
@@ -307,6 +317,65 @@ body{overflow:hidden;background:#000033;margin:0}
     $('#v-hc').on('click',function(){$('#v-help').hide();});
     $('#v-zr').on('click',function(){pZ=1;fit();$(this).hide();});
   });
+
+  /* 9 ── TOUCH STACK-SCROLL (Radiopaedia-style) ───────────────────
+     A one-finger vertical swipe on a panel cines through that panel's
+     slices, the same way you drag through a stack on Radiopaedia. A
+     floating button toggles it, so on a phone/tablet the same finger
+     can EITHER scroll slices (ON) OR place the crosshair / pan (OFF).
+     Two-finger pinch-zoom and double-tap-reset keep working in both
+     modes. The button shows only on touch devices and defaults to ON
+     on phones & tablets so it works the moment the page opens.      */
+  (function(){
+    var isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0||navigator.msMaxTouchPoints>0;
+    var coarse=window.matchMedia&&window.matchMedia('(pointer:coarse)').matches;
+    var on=isTouch&&coarse, STEP=5;   /* finger px per slice step (tunable) */
+    var panels=[['tcontainer','tbup','tbdown'],
+                ['scontainer','sbup','sbdown'],
+                ['fcontainer','fbup','fbdown']];
+    function apply(){
+      for(var i=0;i<panels.length;i++){
+        var n=document.getElementById(panels[i][0]);
+        if(n){n.style.touchAction=on?'none':'';n.style.msTouchAction=on?'none':'';}
+      }
+      /* when scrolling, mute the crosshair draggable so they don't fight */
+      try{$('#tdraggable,#sdraggable,#fdraggable').draggable('option','disabled',on);}catch(e){}
+      var b=document.getElementById('v-scroll');
+      if(b){b.className='v-btn v-scroll'+(on?' v-on':'');b.innerHTML='⇅ Scroll '+(on?'ON':'OFF');}
+    }
+    function bind(p){
+      var node=document.getElementById(p[0]);if(!node)return;
+      var act=false,last=0,acc=0;
+      node.addEventListener('touchstart',function(e){
+        if(!on||e.touches.length!==1){act=false;return;}
+        act=true;last=e.touches[0].clientY;acc=0;
+      },{passive:true});
+      node.addEventListener('touchmove',function(e){
+        if(!on||!act)return;
+        if(e.touches.length!==1){act=false;return;}      /* 2 fingers → pinch */
+        e.preventDefault();
+        var y=e.touches[0].clientY;acc+=y-last;last=y;
+        while(acc>=STEP){pressBtn(p[2]);acc-=STEP;}       /* swipe down → next */
+        while(acc<=-STEP){pressBtn(p[1]);acc+=STEP;}      /* swipe up   → prev */
+      },{passive:false});
+      node.addEventListener('touchend',function(){act=false;},{passive:true});
+      node.addEventListener('touchcancel',function(){act=false;},{passive:true});
+    }
+    $(function(){
+      for(var i=0;i<panels.length;i++)bind(panels[i]);
+      if(isTouch){
+        $('<style>.v-scroll{position:fixed;left:50%;bottom:56px;transform:translateX(-50%);'+
+          'z-index:9991;padding:12px 22px;font-size:15px;border-radius:24px;'+
+          'box-shadow:0 2px 10px rgba(0,0,0,.55)}'+
+          '.v-btn.v-on{background:#1a8f3c;border-color:#23c552;color:#fff}'+
+          '.v-btn.v-on:hover{background:#23c552;border-color:#23c552;color:#fff}</style>').appendTo('head');
+        $('body').append('<button id="v-scroll" class="v-btn v-scroll" '+
+          'title="Toggle touch stack-scroll — swipe a panel to change slices"></button>');
+        $('#v-scroll').on('click',function(){on=!on;apply();});
+      }
+      apply();
+    });
+  })();
 }(jQuery));
 </script>
 </head>
